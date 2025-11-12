@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # This script finds and stops the process running the 4-to_infinity_and_beyond script.
 
 # The -f flag allows pkill to search the full command line, ensuring the script is found
