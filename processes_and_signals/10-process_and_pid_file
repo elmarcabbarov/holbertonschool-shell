@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #Process and PID file
-touch /var/run/myscript.pid
+
 PID_FILE="/var/run/myscript.pid"
 
 echo "$$" > "$PID_FILE" 
