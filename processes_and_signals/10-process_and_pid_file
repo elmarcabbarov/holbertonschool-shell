@@ -2,7 +2,13 @@
 #Process and PID file
 
 PID_FILE="/var/run/myscript.pid"
+mkdir -p /var/run 2>/dev/null
 
+# If not writable, fallback to /tmp
+if ! echo "$$" > "$PID_FILE" 2>/dev/null; then
+    PID_FILE="/tmp/myscript.pid"
+    echo "$$" > "$PID_FILE"
+fi
 echo "$$" > "$PID_FILE" 
 trap 'echo "I hate the kill command"' SIGTERM
 trap 'echo "Y U no love me?!"' SIGINT
