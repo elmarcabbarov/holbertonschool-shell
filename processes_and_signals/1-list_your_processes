@@ -1,4 +1,4 @@
-#!/bin/bash
+#!usr/bin/env bash
 # Script that lists all running processes in a user-oriented, hierarchical format
 
 ps auxf
