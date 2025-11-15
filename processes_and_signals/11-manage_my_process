@@ -2,9 +2,10 @@
 # Init script to manage manage_my_process daemon
 
 PID_FILE="/var/run/my_process.pid"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 start() {
-    ./manage_my_process &
+    "$SCRIPT_DIR/manage_my_process" &
     echo $! > "$PID_FILE"
     echo "manage_my_process started"
 }
@@ -22,7 +23,7 @@ restart() {
         kill "$(cat "$PID_FILE")"
         rm -f "$PID_FILE"
     fi
-    ./manage_my_process &
+    "$SCRIPT_DIR/manage_my_process" &
     echo $! > "$PID_FILE"
     echo "manage_my_process restarted"
 }
