@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
-# This script runs indefinitely, writing a message to a file every 2 seconds
+# Manage scripts
 
-# Start an infinite loop
-while true
-do
-    # Append the message to the log file
-    echo "I am alive!" >> /tmp/my_process
-    
-    # Pause for 2 seconds
-    sleep 2
+while true; do
+echo "I am alive!" >> /tmp/my_process
+sleep 2
 done
