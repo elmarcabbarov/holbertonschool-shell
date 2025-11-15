@@ -1,45 +1,26 @@
 #!/usr/bin/env bash
-# Init script to manage manage_my_process daemon
+#salaaam
 
 PID_FILE="/var/run/my_process.pid"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-start() {
-    "$SCRIPT_DIR/manage_my_process" &
-    echo $! > "$PID_FILE"
-    echo "manage_my_process started"
-}
-
-stop() {
-    if [ -f "$PID_FILE" ]; then
-        kill "$(cat "$PID_FILE")"
-        rm -f "$PID_FILE"
-    fi
-    echo "manage_my_process stopped"
-}
-
-restart() {
-    if [ -f "$PID_FILE" ]; then
-        kill "$(cat "$PID_FILE")"
-        rm -f "$PID_FILE"
-    fi
-    "$SCRIPT_DIR/manage_my_process" &
-    echo $! > "$PID_FILE"
-    echo "manage_my_process restarted"
-}
+PROCESS="./manage_my_process"
 
 case "$1" in
-    start)
-        start
-        ;;
-    stop)
-        stop
-        ;;
-    restart)
-        restart
-        ;;
-    *)
-        echo "Usage: manage_my_process {start|stop|restart}"
-        exit 1
-        ;;
+  start)
+    $PROCESS &
+    echo $! > $PID_FILE
+    echo "manage_my_process started"
+    ;;
+  stop)
+    [ -f $PID_FILE ] && kill $(cat $PID_FILE) && rm $PID_FILE
+    echo "manage_my_process stopped"
+    ;;
+  restart)
+    [ -f $PID_FILE ] && kill $(cat $PID_FILE) && rm $PID_FILE
+    $PROCESS &
+    echo $! > $PID_FILE
+    echo "manage_my_process restarted"
+    ;;
+  *)
+    echo "Usage: manage_my_process {start|stop|restart}"
+    ;;
 esac
