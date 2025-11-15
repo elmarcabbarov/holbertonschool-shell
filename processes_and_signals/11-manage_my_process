@@ -1,61 +1,43 @@
 #!/usr/bin/env bash
-# Init script to manage the 'manage_my_process' daemon
+# Init script to manage manage_my_process daemon
 
-# Define the location for the Process ID (PID) file
-PIDFILE="/var/run/my_process.pid"
+PID_FILE="/var/run/my_process.pid"
 
-# Define the path to the process we are managing
-PROCESS_SCRIPT="./manage_my_process"
-
-##
-# do_start: Function to perform the start action
-##
-do_start() {
-    # Start the process in the background
-    "$PROCESS_SCRIPT" &
-    
-    # Write PID to file. Ignore errors (for 'set -e' and permissions)
-    echo $! > "$PIDFILE" 2>/dev/null || true
+start() {
+    ./manage_my_process &
+    echo $! > "$PID_FILE"
+    echo "manage_my_process started"
 }
 
-##
-# do_stop: Function to perform the stop action
-##
-do_stop() {
-    # Check if the PID file exists
-    if [ -f "$PIDFILE" ]; then
-        # Kill process. Ignore errors (if process missing, etc.)
-        kill "$(cat "$PIDFILE")" 2>/dev/null || true
-        
-        # Remove PID file. Ignore errors (permissions, etc.)
-        rm -f "$PIDFILE" 2>/dev/null || true
+stop() {
+    if [ -f "$PID_FILE" ]; then
+        kill "$(cat "$PID_FILE")"
+        rm -f "$PID_FILE"
     fi
+    echo "manage_my_process stopped"
 }
 
-##
-# Main script logic using a 'case' statement
-##
+restart() {
+    if [ -f "$PID_FILE" ]; then
+        kill "$(cat "$PID_FILE")"
+        rm -f "$PID_FILE"
+    fi
+    ./manage_my_process &
+    echo $! > "$PID_FILE"
+    echo "manage_my_process restarted"
+}
+
 case "$1" in
     start)
-        do_start
-        echo "manage_my_process started"
+        start
         ;;
     stop)
-        do_stop
-        echo "manage_my_process stopped"
+        stop
         ;;
     restart)
-        # Stop the process
-        do_stop
-        
-        # Start the process
-        do_start
-        
-        # Display ONLY the restart message
-        echo "manage_my_process restarted"
+        restart
         ;;
     *)
-        # Default case if $1 is empty or not recognized
         echo "Usage: manage_my_process {start|stop|restart}"
         exit 1
         ;;
