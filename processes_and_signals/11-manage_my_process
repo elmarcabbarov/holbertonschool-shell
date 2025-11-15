@@ -5,49 +5,31 @@
 PIDFILE="/var/run/my_process.pid"
 
 # Define the path to the process we are managing
-# This assumes 'manage_my_process' is in the same directory
 PROCESS_SCRIPT="./manage_my_process"
 
 ##
-# Start Function
+# do_start: Function to perform the start action
 ##
-start() {
-    # Start the process in the background (&)
+do_start() {
+    # Start the process in the background
     "$PROCESS_SCRIPT" &
     
-    # Capture the PID of the last backgrounded process ($!) and write it to the PID file
-    echo $! > "$PIDFILE"
-    echo "manage_my_process started"
+    # Write PID to file. Ignore errors (for 'set -e' and permissions)
+    echo $! > "$PIDFILE" 2>/dev/null || true
 }
 
 ##
-# Stop Function
+# do_stop: Function to perform the stop action
 ##
-stop() {
+do_stop() {
     # Check if the PID file exists
     if [ -f "$PIDFILE" ]; then
-        # Read the PID from the file and send the KILL signal
-        kill "$(cat "$PIDFILE")"
+        # Kill process. Ignore errors (if process missing, etc.)
+        kill "$(cat "$PIDFILE")" 2>/dev/null || true
         
-        # Remove the PID file
-        rm -f "$PIDFILE"
+        # Remove PID file. Ignore errors (permissions, etc.)
+        rm -f "$PIDFILE" 2>/dev/null || true
     fi
-    # Display the stop message (as required by the prompt, even if it wasn't running)
-    echo "manage_my_process stopped"
-}
-
-##
-# Restart Function
-##
-restart() {
-    # Call the stop function
-    stop
-    
-    # Call the start function
-    start
-    
-    # Display the restart message
-    echo "manage_my_process restarted"
 }
 
 ##
@@ -55,13 +37,22 @@ restart() {
 ##
 case "$1" in
     start)
-        start
+        do_start
+        echo "manage_my_process started"
         ;;
     stop)
-        stop
+        do_stop
+        echo "manage_my_process stopped"
         ;;
     restart)
-        restart
+        # Stop the process
+        do_stop
+        
+        # Start the process
+        do_start
+        
+        # Display ONLY the restart message
+        echo "manage_my_process restarted"
         ;;
     *)
         # Default case if $1 is empty or not recognized
