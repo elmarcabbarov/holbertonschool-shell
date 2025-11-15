@@ -25,7 +25,7 @@ trap sigint_handler SIGINT
 trap sigquit_handler SIGQUIT
 
 # Create PID file with current process ID
-echo $$ > /var/run/myscript.pid
+sudo bash -c "echo $ > /var/run/myscript.pid"
 
 # Display message indefinitely
 while true
